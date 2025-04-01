@@ -28,6 +28,9 @@ jobs:
       - name: Update Submodule in Root Repo
         if: github.event.pull_request.merged == true
         run: |
+          #/home/tudo/actions-runner2/_work/ci-sub-01/ci-sub-01/./test01
+          cd ..
+          git clone https://github.com/DNTT-1603/test01.git
           cd test01 # Navigate into the checked-out root repo
           git submodule update --remote sub1 # Update the submodule 'sub1'
 
