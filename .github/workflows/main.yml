@@ -1,0 +1,40 @@
+name: Auto Update Root Repo on Submodule Merge
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [closed]
+
+jobs:
+  update_root_repo:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Root Repo
+        uses: actions/checkout@v3
+        with:
+          repository: DNTT-1603/test01
+          token: ${{ secrets.MAIN_REPO_TOKEN }} # Ensure this token has write access to the root repo
+
+      - name: Set up Git
+        run: |
+          git config user.name "tudo"
+          git config user.email "dongocthanhtuwork@gmail.com"
+
+      - name: Check if Pull Request was Merged
+        if: github.event.pull_request.merged == true
+        run: echo "Pull request was merged in the submodule. Proceeding to update the root repo."
+
+      - name: Update Submodule in Root Repo
+        if: github.event.pull_request.merged == true
+        run: |
+          cd test01 # Navigate into the checked-out root repo
+          git submodule update --remote sub1 # Update the submodule 'sub1'
+
+          git add sub1
+          git commit -m "Update submodule 'sub1' to latest commit from ci-sub-01" || echo "No submodule updates needed"
+          git push origin main
+
+      - name: Trigger Root Repo Build (Optional)
+        if: success() && github.event.pull_request.merged == true
+        run: echo "Triggering build in the root repo (if configured)."
