@@ -34,6 +34,7 @@ jobs:
           git add sub1
           git commit -m "Update submodule 'sub1' to latest commit from ci-sub-01" || echo "No submodule updates needed"
           git push origin main
+        working-directory: ./test01
 
       - name: Trigger Root Repo Build (Optional)
         if: success() && github.event.pull_request.merged == true
